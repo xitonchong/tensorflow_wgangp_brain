@@ -206,7 +206,7 @@ class GAN(object):
         train_writer = tf.summary.FileWriter(config.log_dir + '/train', self.sess.graph)
         tf.global_variables_initializer().run()
 
-        #sample_x, no_samples = get_input(config.data_dir, config.batch_size)
+        sample_x, no_samples = get_input(config.data_dir, config.batch_size)
         
         could_load, checkpoint_counter = self.load(config.checkpoint_dir)
         if could_load:
@@ -217,7 +217,6 @@ class GAN(object):
         
         batch_no = no_samples//(self.batch_size*config.n_critic)
         for epoch in range(config.epochs+1):
-            sample_x, no_samples = get_input(config.data_dir, config.batch_size)
             for idx in range(batch_no): 
                 for n in range(config.n_critic):
                     sample_z = np.random.normal(0, 1, (config.batch_size, self.z_dim))

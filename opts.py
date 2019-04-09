@@ -9,32 +9,31 @@ def lrelu(x, leak=0.2):
     with tf.variable_scope("lrelu"):
         return tf.maximum(x, x*leak)
 
-def batch_norm(inputs, name="batch_norm", reuse=False):
-    with tf.variable_scope(name, reuse=reuse) as scope:
+def batch_norm(inputs, name="batch_norm"):
+    with tf.variable_scope(name):
         return tf.nn.batch_normalization(x=inputs,
                                         name=name)
     
     
-def instance_norm(inputs, name="instance_norm", reuse=tf.AUTO_REUSE):
-    with tf.variable_scope(name, reuse=reuse) as scope:
-        return tf.contrib.layers.instance_norm(inputs, reuse=reuse, scope=scope)
+def instance_norm(inputs, name="instance_norm"):
+    with tf.variable_scope(name):
+        return tf.contrib.layers.instance_norm(inputs)
 
-def conv3d(inputs, filters, kernel_size, strides=2, name=None, padding='same',
-            reuse=tf.AUTO_REUSE):
-    with tf.variable_scope("conv3d", reuse=reuse) as scope:
+def conv3d(inputs, filters, kernel_size, strides=2, name=None, padding='same'):
+    with tf.variable_scope("conv3d"):
         return tf.layers.conv3d(inputs, filters, kernel_size, 
-                strides, name=name, padding=padding, reuse=reuse)
+                strides, name=name, padding=padding)
 
         
 def deconv3d(inputs, out_channels, kernel_size, strides, name, padding='SAME'):
-    with tf.variable_scope("transpose_conv", reuse=False) as scope:
+    with tf.variable_scope("transpose_conv"):
         #return tf.nn.conv3d_transpose(inputs, filters, output_shape, strides,
         #padding)
         return tf.layers.conv3d_transpose(inputs,out_channels,kernel_size,
-                strides,padding=padding, name=name, reuse=False)
+                strides,padding=padding, name=name)
 
-def tanh(inputs, scale=6.0, name=None, reuse=False):
-    with tf.variable_scope('tanh', reuse=reuse):
+def tanh(inputs, scale=6.0, name=None):
+    with tf.variable_scope('tanh'):
         '''
         init = tf.constant_initializer(scale)
         a = tf.get_variable("a", shape=[1], dtype=tf.float32, initializer=init,

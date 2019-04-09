@@ -105,25 +105,25 @@ class GAN(object):
         with tf.device('/device:GPU:1'):
             with tf.variable_scope("discriminator", reuse=reuse) as scope:
                 conv1 = lrelu(instance_norm(conv3d(inputs,out_channel, kernel_size,
-                    name='d_conv1', reuse=reuse), name='d_inl1', reuse=reuse))
+                    name='d_conv1'), name='d_inl1'))
                 conv2 = lrelu(instance_norm(conv3d(conv1, out_channel*2, kernel_size,
-                    name='d_conv2', reuse=reuse), name='d_inl2', reuse=reuse))
+                    name='d_conv2'), name='d_inl2'))
                 conv3 = lrelu(instance_norm(conv3d(conv2, out_channel*4, kernel_size,
-                    name='d_conv3', reuse=reuse), name='d_inl3', reuse=reuse))
+                    name='d_conv3'), name='d_inl3'))
                 conv4 = lrelu(instance_norm(conv3d(conv3, out_channel*8, kernel_size,
-                    name='d_conv4', reuse=reuse), name='d_inl4', reuse=reuse))
+                    name='d_conv4'), name='d_inl4'))
                 conv5 = lrelu(instance_norm(conv3d(conv4, out_channel*16, kernel_size,
-                    name='d_conv5', reuse=reuse), name='d_inl5', reuse=reuse))
+                    name='d_conv5'), name='d_inl5'))
                 conv6 = lrelu(instance_norm(conv3d(conv5, out_channel*32, kernel_size, 
-                    name='d_conv6', reuse=reuse), name='d_inl6', reuse=reuse))
+                    name='d_conv6'), name='d_inl6'))
                 # implement 1x1 convolution
                 #conv6 = lrelu(instance_norm(conv3d(conv6, out_channel*8, 1, 1, 
-                #    name='d_conv6', reuse=reuse), name='d_inl6', reuse=reuse))
+                #    name='d_conv6'), name='d_inl6'))
                 flatten_o = tf.layers.flatten(conv6)
-                x = tf.layers.dense(flatten_o, units=32, use_bias=True, reuse=reuse,
+                x = tf.layers.dense(flatten_o, units=32, use_bias=True,
                                     name='d_fc_o1')
                 fc_o = tf.layers.dense(x, units=1, use_bias=False,
-                        reuse=reuse, name='d_fc_o')
+                         name='d_fc_o')
 
                 return fc_o
 
@@ -132,7 +132,7 @@ class GAN(object):
     def build_generator(self, z, input_channel=512, reuse=tf.AUTO_REUSE, kernel_size=4):
         with tf.device('/device:GPU:0'):
             with tf.variable_scope("generator", reuse=reuse) as scope:
-                l1 = tf.layers.dense(z, units=3*3*3*input_channel, use_bias=True, reuse=reuse, name='g_project')
+                l1 = tf.layers.dense(z, units=3*3*3*input_channel, use_bias=True, name='g_project')
                 l1 = tf.reshape(l1, [-1,3,3,3,input_channel])#list bracket is also counted as a dimension
               
                 l2 = elu(instance_norm(deconv3d(inputs=l1, 

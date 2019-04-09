@@ -217,6 +217,7 @@ class GAN(object):
         
         batch_no = no_samples//(self.batch_size*config.n_critic)
         for epoch in range(config.epochs+1):
+            sample_x, no_samples = get_input(config.data_dir, config.batch_size)
             for idx in range(batch_no): 
                 for n in range(config.n_critic):
                     sample_z = np.random.normal(0, 1, (config.batch_size, self.z_dim))

@@ -5,9 +5,9 @@ import tensorflow as tf
 import pprint
 from  utils import *
 from model import *
-import memory_saving_gradients
+#import memory_saving_gradients
 # monkey patch tf.gradients to point to our custom version, with automatic checkpoint selection
-tf.__dict__["gradients"] = memory_saving_gradients.gradients_memory
+#tf.__dict__["gradients"] = memory_saving_gradients.gradients_memory
 
 pp = pprint.PrettyPrinter()
 

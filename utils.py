@@ -37,6 +37,7 @@ def get_input(data_dir, batch_size=2):
     with tf.device('/cpu:0'):
         brain_dir = data_dir
         files = glob.glob(os.path.join(brain_dir, '*.tfrecords'))
+        np.shuffle(files)
         no_files = len(files)
         assert no_files > 0
         print("tfrecords files ", no_files)

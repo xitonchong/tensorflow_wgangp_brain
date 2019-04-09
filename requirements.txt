@@ -1,0 +1,5 @@
+nibabel
+tensorflow-gpu==1.10.0
+pytest
+networkx
+toposort

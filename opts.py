@@ -32,7 +32,7 @@ def deconv3d(inputs, out_channels, kernel_size, strides, name, padding='SAME'):
         return tf.layers.conv3d_transpose(inputs,out_channels,kernel_size,
                 strides,padding=padding, name=name)
 
-def tanh(inputs, scale=6.0, name=None):
+def tanh(inputs, scale=20.0, name=None):
     with tf.variable_scope('tanh'):
         '''
         init = tf.constant_initializer(scale)

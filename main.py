@@ -5,9 +5,9 @@ import tensorflow as tf
 import pprint
 from  utils import *
 from model import *
-#import memory_saving_gradients
+import memory_saving_gradients
 # monkey patch tf.gradients to point to our custom version, with automatic checkpoint selection
-#tf.__dict__["gradients"] = memory_saving_gradients.gradients_memory
+tf.__dict__["gradients"] = memory_saving_gradients.gradients_memory
 
 pp = pprint.PrettyPrinter()
 
@@ -31,6 +31,8 @@ flags.DEFINE_string("log_dir", './logs', "directory to store tensorboard history
 #define boolean
 flags.DEFINE_boolean("train", False, "true for training, false of testing,  [true]")
 flags.DEFINE_boolean("test", True, "true for sampling, [True]")
+flags.DEFINE_boolean("use_resnet", False, "generator resnet [false]")
+
 FLAGS = flags.FLAGS
 
 def main(_):
@@ -53,7 +55,7 @@ def main(_):
         gan = GAN(sess=sess, batch_size=FLAGS.batch_size,
                 checkpoint_dir=FLAGS.checkpoint_dir, 
                 sample_dir=FLAGS.sample_dir,
-                data_dir=FLAGS.data_dir)
+                data_dir=FLAGS.data_dir, flags=FLAGS)
 
         if FLAGS.train:
             print('===== disc/gen update ', FLAGS.n_critic)

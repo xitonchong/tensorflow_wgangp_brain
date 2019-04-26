@@ -6,13 +6,14 @@ import tensorflow as tf
 import numpy as np
 from opts import *
 from utils import *
+from module import *
 
 
 class GAN(object):
     def __init__(self, sess, input_r=193, input_a=229, input_s=193,
             crop=True, batch_size=8, y_dim=None, z_dim=200, 
             dataset_name='hcp', checkpoint_dir=None, sample_dir=None, 
-            data_dir='./data'):
+            data_dir='./data', flags=None):
 
         '''
         args:
@@ -30,7 +31,16 @@ class GAN(object):
         self.checkpoint_dir = checkpoint_dir
         self.data_dir = data_dir
         self.model_dir = 'model'
+        if flags.use_resnet is True:
+            print("== using resnet as generator")
+            self.build_generator = build_resnet
+        else:
+            print("== using dcgan as generator")
+            self.build_generator = build_generator
+
+        self.build_discriminator = build_discriminator
         self.build_model()
+
 
     def wasserstein_loss(self, predictions, labels):
         return predictions*labels
@@ -101,7 +111,7 @@ class GAN(object):
 
 
 
-    def build_discriminator(self, inputs, out_channel=32, reuse=tf.AUTO_REUSE, kernel_size=4):
+    def build_discriminator1(self, inputs, out_channel=32, reuse=tf.AUTO_REUSE, kernel_size=4):
         with tf.device('/device:GPU:1'):
             with tf.variable_scope("discriminator", reuse=reuse) as scope:
                 conv1 = lrelu(instance_norm(conv3d(inputs,out_channel, kernel_size,
@@ -129,7 +139,7 @@ class GAN(object):
 
 
 
-    def build_generator(self, z, input_channel=512, reuse=tf.AUTO_REUSE, kernel_size=4):
+    def build_generator1(self, z, input_channel=512, reuse=tf.AUTO_REUSE, kernel_size=4):
         with tf.device('/device:GPU:0'):
             with tf.variable_scope("generator", reuse=reuse) as scope:
                 l1 = tf.layers.dense(z, units=3*3*3*input_channel, use_bias=True, name='g_project')
@@ -171,6 +181,7 @@ class GAN(object):
         #----------------------------
 
         for epoch in range(config.generate_test_images):
+            print("test , epoch ", epoch)
             filename = './C6493_FSPGRBrainExtractionBrain_diffeo1InverseWarp.nii.gz'
             _, affine, hdr = load(filename)
             sample_z = np.random.normal(0, 1, (1,self.z_dim))

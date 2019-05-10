@@ -81,8 +81,8 @@ def build_discriminator( inputs, out_channel=32, reuse=tf.AUTO_REUSE,
             conv6 = lrelu(instance_norm(conv3d(conv5, out_channel*32, kernel_size,
                     name='d_conv6'), name='d_inl6'))
             # implement 1x1 convolution
-            #conv6 = lrelu(instance_norm(conv3d(conv6, out_channel*8, 1, 1,
-            #    name='d_conv6'), name='d_inl6'))
+            conv6 = lrelu(instance_norm(conv3d(conv6, out_channel*8, 1, 1,
+                name='d_conv6'), name='d_inl6'))
             flatten_o = tf.layers.flatten(conv6)
             x = tf.layers.dense(flatten_o, units=32, use_bias=True,
                     name='d_fc_o1')
@@ -90,8 +90,51 @@ def build_discriminator( inputs, out_channel=32, reuse=tf.AUTO_REUSE,
                     name='d_fc_o')
 
             return fc_o
-    
-    
+
+def build_resnet_discriminator(x, out_channel=32, reuse=tf.AUTO_REUSE,
+                    kernel_size=4, residule_number=5):
+
+    def residule_block(x, filters=32, kernel_size=3, strides=1,
+                    name='res', padding='SAME'):
+                y = elu(instance_norm(conv3d(x, filters=filters,
+                    kernel_size=kernel_size, strides=strides,
+                    padding=padding,
+                    name=name+'_c1'), name+'_l1'))
+                y = instance_norm(conv3d(y, filters=filters,
+                    kernel_size=kernel_size, strides=strides,
+                    padding=padding,
+                    name=name+'_c2'), name+'_l2')
+                return y + x
+
+    with tf.device('/device:GPU:1'):
+        with tf.variable_scope("discriminator", reuse=reuse) as scope:
+            for i in range(1,7):
+                # return 1 .. 6
+                x = lrelu(instance_norm(conv3d(x, 
+                    #np.clip(out_channel * np.power(2,i), 
+                    #    a_min=out_channel,
+                    #    a_max=out_channel*8), 
+                    out_channel * np.power(2,i),
+                    kernel_size,
+                    name='d_conv{}'.format(i)), 
+                    name='d_inl{}'.format(i)))
+            # 1x1 convolution
+            x = relu(instance_norm(conv3d(x, 
+                    out_channel, kernel_size=1, strides=1, 
+                    name='d_1x1conv7'), 
+                    name='d_inl7'))
+            for i in range(8, residule_number+8):
+                x = residule_block(x, name='res_{}'.format(i))
+            # flatten layer
+            flatten_o = tf.layers.flatten(x)
+            x = tf.layers.dense(flatten_o, units=32, use_bias=True,
+                    name='d_fc_o1')
+            fc_o = tf.layers.dense(x, units=1, use_bias=False,
+                    name='d_fc_o')
+
+            return fc_o
+
+
 def build_generator( z, input_channel=512, reuse=tf.AUTO_REUSE, kernel_size=4):
     with tf.device('/device:GPU:0'):
         with tf.variable_scope("generator", reuse=reuse) as scope:

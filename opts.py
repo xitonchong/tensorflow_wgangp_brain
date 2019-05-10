@@ -20,16 +20,16 @@ def instance_norm(inputs, name="instance_norm"):
         return tf.contrib.layers.instance_norm(inputs)
 
 def conv3d(inputs, filters, kernel_size, strides=2, name=None, padding='same'):
-    with tf.variable_scope("conv3d"):
-        return tf.layers.conv3d(inputs, filters, kernel_size, 
+    #with tf.variable_scope("conv3d"):
+    return tf.layers.conv3d(inputs, filters, kernel_size, 
                 strides, name=name, padding=padding)
 
         
 def deconv3d(inputs, out_channels, kernel_size, strides, name, padding='SAME'):
-    with tf.variable_scope("transpose_conv"):
-        #return tf.nn.conv3d_transpose(inputs, filters, output_shape, strides,
-        #padding)
-        return tf.layers.conv3d_transpose(inputs,out_channels,kernel_size,
+    #with tf.variable_scope("transpose_conv"):
+    #return tf.nn.conv3d_transpose(inputs, filters, output_shape, strides,
+    #padding)
+    return tf.layers.conv3d_transpose(inputs,out_channels,kernel_size,
                 strides,padding=padding, name=name)
 
 def tanh(inputs, scale=20.0, name=None):

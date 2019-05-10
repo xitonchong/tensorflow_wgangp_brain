@@ -30,15 +30,21 @@ class GAN(object):
         self.dataset_name = dataset_name
         self.checkpoint_dir = checkpoint_dir
         self.data_dir = data_dir
-        self.model_dir = 'model'
-        if flags.use_resnet is True:
+        self.model_dir = flags.model_dir
+        if flags.use_g_resnet is True:
             print("== using resnet as generator")
             self.build_generator = build_resnet
         else:
             print("== using dcgan as generator")
             self.build_generator = build_generator
-
-        self.build_discriminator = build_discriminator
+ 
+        if flags.use_d_resnet is True:
+            print("== using resnet discriminator")
+            self.build_discriminator = build_resnet_discriminator
+        else:
+            print("== using dcgan as discriminator")
+            self.build_discriminator = build_discriminator
+        
         self.build_model()
 
 

@@ -31,7 +31,8 @@ flags.DEFINE_string("log_dir", './logs', "directory to store tensorboard history
 #define boolean
 flags.DEFINE_boolean("train", False, "true for training, false of testing,  [true]")
 flags.DEFINE_boolean("test", True, "true for sampling, [True]")
-flags.DEFINE_boolean("use_resnet", False, "generator resnet [false]")
+flags.DEFINE_boolean("use_g_resnet", False, "generator resnet [false]")
+flags.DEFINE_boolean("use_d_resnet", False, "discriminaotr resnet [false]")
 
 FLAGS = flags.FLAGS
 

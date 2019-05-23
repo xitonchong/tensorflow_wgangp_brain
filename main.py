@@ -28,6 +28,7 @@ flags.DEFINE_string("checkpoint_dir", "./checkpoint", "direcotry name to save ch
 flags.DEFINE_string("data_dir", "/home/xitonchong/data/", "check directory")
 flags.DEFINE_string("sample_dir", "./samples", "directory to save the output brain")
 flags.DEFINE_string("log_dir", './logs', "directory to store tensorboard history")
+flags.DEFINE_string("model_dir", "model", "checkpoint model name [model]")
 #define boolean
 flags.DEFINE_boolean("train", False, "true for training, false of testing,  [true]")
 flags.DEFINE_boolean("test", True, "true for sampling, [True]")

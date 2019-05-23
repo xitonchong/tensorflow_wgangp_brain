@@ -82,7 +82,7 @@ def build_discriminator( inputs, out_channel=32, reuse=tf.AUTO_REUSE,
                     name='d_conv6'), name='d_inl6'))
             # implement 1x1 convolution
             conv6 = lrelu(instance_norm(conv3d(conv6, out_channel*8, 1, 1,
-                name='d_conv6'), name='d_inl6'))
+                name='d_1x1conv7'), name='d_inl7'))
             flatten_o = tf.layers.flatten(conv6)
             x = tf.layers.dense(flatten_o, units=32, use_bias=True,
                     name='d_fc_o1')
@@ -111,10 +111,9 @@ def build_resnet_discriminator(x, out_channel=32, reuse=tf.AUTO_REUSE,
             for i in range(1,7):
                 # return 1 .. 6
                 x = lrelu(instance_norm(conv3d(x, 
-                    #np.clip(out_channel * np.power(2,i), 
-                    #    a_min=out_channel,
-                    #    a_max=out_channel*8), 
-                    out_channel * np.power(2,i),
+                    np.clip(out_channel * np.power(2,i), 
+                        a_min=out_channel,
+                        a_max=out_channel*8), 
                     kernel_size,
                     name='d_conv{}'.format(i)), 
                     name='d_inl{}'.format(i)))

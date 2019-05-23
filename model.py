@@ -233,7 +233,7 @@ class GAN(object):
             print(" [!] Load failed...")
         
         batch_no = no_samples//(self.batch_size*config.n_critic)
-        for epoch in range(config.epochs+1):
+        for epoch in range(checkpoint_counter+1, config.epochs+1):
             sample_x, no_samples = get_input(config.data_dir, config.batch_size)
             for idx in range(batch_no): 
                 for n in range(config.n_critic):

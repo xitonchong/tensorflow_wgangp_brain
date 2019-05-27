@@ -30,7 +30,7 @@ class GAN(object):
         self.dataset_name = dataset_name
         self.checkpoint_dir = checkpoint_dir
         self.data_dir = data_dir
-        self.model_dir = flags.model_dir
+        #self.model_dir = flags.model_dir
         if flags.use_g_resnet is True:
             print("== using resnet as generator")
             self.build_generator = build_resnet
@@ -178,7 +178,8 @@ class GAN(object):
         print('in test here')
 
         #===  load model =======
-        could_load, checkpoint_counter = self.load(config.checkpoint_dir)
+        could_load, checkpoint_counter = self.load(config.checkpoint_dir,
+                                                config.model_dir)
         if could_load:
             counter = checkpoint_counter
             print(" [*] Load SUCCESS ", counter)
@@ -225,7 +226,8 @@ class GAN(object):
 
         sample_x, no_samples = get_input(config.data_dir, config.batch_size)
         
-        could_load, checkpoint_counter = self.load(config.checkpoint_dir)
+        could_load, checkpoint_counter = self.load(config.checkpoint_dir, 
+                                                    config.model_dir)
         if could_load:
             counter = checkpoint_counter
             print(" [*] Load SUCCESS ", counter)
@@ -261,7 +263,7 @@ class GAN(object):
 
                     
             # save every few epoch
-            self.save(config.checkpoint_dir, epoch)
+            self.save(config.checkpoint_dir, epoch. config.model_dir)
             if epoch % 2 == 0:
                 filename = './C6493_FSPGRBrainExtractionBrain_diffeo1InverseWarp.nii.gz'
                 _, affine, hdr = load(filename)
@@ -280,9 +282,9 @@ class GAN(object):
 
 
                 
-    def save(self, checkpoint_dir, step):
+    def save(self, checkpoint_dir, step, model_dir):
         model_name = "WGANGP.model"
-        checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir)
+        checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
 
         if not os.path.exists(checkpoint_dir):
             os.makedirs(checkpoint_dir)
@@ -291,10 +293,10 @@ class GAN(object):
                 os.path.join(checkpoint_dir, model_name),
                 global_step=step)
 
-    def load(self, checkpoint_dir):
+    def load(self, checkpoint_dir, model_dir):
         import re
         print(" [*] Reading checkpoints...")
-        checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir)
+        checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
 
         ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
         if ckpt and ckpt.model_checkpoint_path:

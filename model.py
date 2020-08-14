@@ -27,6 +27,7 @@ class GAN(object):
         self.input_r = input_r
         self.input_a = input_a
         self.input_s = input_s
+        self.B_residual_blocks = flags.residual_block
         self.dataset_name = dataset_name
         self.checkpoint_dir = checkpoint_dir
         self.data_dir = data_dir
@@ -55,7 +56,8 @@ class GAN(object):
     def build_model(self):
         self.z_placeholder = tf.placeholder(tf.float32, shape=[None, self.z_dim])
         
-        self.fake_sample = self.build_generator(self.z_placeholder)
+        self.fake_sample = self.build_generator(self.z_placeholder, 
+                                    residule_number = self.B_residual_blocks)
         self.real_placeholder = tf.placeholder(tf.float32,
                 shape=[None,193,229,193,3])
         # histogram summary to be added to writer
@@ -118,7 +120,8 @@ class GAN(object):
 
 
     def build_discriminator1(self, inputs, out_channel=32, reuse=tf.AUTO_REUSE, kernel_size=4):
-        with tf.device('/device:GPU:1'):
+        #with tf.device('/device:GPU:1'):
+        with tf.device('/device:cpu:0'):
             with tf.variable_scope("discriminator", reuse=reuse) as scope:
                 conv1 = lrelu(instance_norm(conv3d(inputs,out_channel, kernel_size,
                     name='d_conv1'), name='d_inl1'))
@@ -146,7 +149,8 @@ class GAN(object):
 
 
     def build_generator1(self, z, input_channel=512, reuse=tf.AUTO_REUSE, kernel_size=4):
-        with tf.device('/device:GPU:0'):
+        #with tf.device('/device:GPU:0'):
+        with tf.device('/device:cpu:0'):
             with tf.variable_scope("generator", reuse=reuse) as scope:
                 l1 = tf.layers.dense(z, units=3*3*3*input_channel, use_bias=True, name='g_project')
                 l1 = tf.reshape(l1, [-1,3,3,3,input_channel])#list bracket is also counted as a dimension
@@ -263,7 +267,7 @@ class GAN(object):
 
                     
             # save every few epoch
-            self.save(config.checkpoint_dir, epoch. config.model_dir)
+            self.save(config.checkpoint_dir, epoch, config.model_dir)
             if epoch % 2 == 0:
                 filename = './C6493_FSPGRBrainExtractionBrain_diffeo1InverseWarp.nii.gz'
                 _, affine, hdr = load(filename)

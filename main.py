@@ -1,6 +1,6 @@
 import os
 import numpy as np
-
+import memory_saving_gradients
 import tensorflow as tf
 import pprint
 from  utils import *
@@ -13,6 +13,7 @@ pp = pprint.PrettyPrinter()
 
 flags = tf.app.flags
 #define integer
+flags.DEFINE_integer("residual_block", 5, "residual block for generator")
 flags.DEFINE_integer("epochs", 100, "epoch to train [100]")
 flags.DEFINE_integer("batch_size", 4, "default batch = 4")
 flags.DEFINE_integer("generate_test_images", 1, "number of images to geneerate during test. [10]")
@@ -34,11 +35,14 @@ flags.DEFINE_boolean("train", False, "true for training, false of testing,  [tru
 flags.DEFINE_boolean("test", True, "true for sampling, [True]")
 flags.DEFINE_boolean("use_g_resnet", False, "generator resnet [false]")
 flags.DEFINE_boolean("use_d_resnet", False, "discriminaotr resnet [false]")
+flags.DEFINE_boolean("save_memory", False, "use memory saving gradient, checkpointing every convolution block, backprop mem ommited")
 
 FLAGS = flags.FLAGS
 
 def main(_):
     pp.pprint(FLAGS.__flags)
+    if FLAGS.save_memory:
+        tf.__dict__["gradients"] = memory_saving_gradients.gradients_memory
 
     if not os.path.exists(FLAGS.checkpoint_dir):
         os.makedirs(FLAGS.checkpoint_dir)
@@ -49,10 +53,11 @@ def main(_):
 
     path = os.path.join(FLAGS.sample_dir, "gen_brain_{}")
     print('===== saving path: ', path.format('1'))
-    run_config = tf.ConfigProto()
-    run_config.gpu_options.allow_growth=True
+    #run_config = tf.ConfigProto()  # temporarily disable while nvidia-smi down
+    #run_config.gpu_options.allow_growth=True
 
-    with tf.Session(config=run_config) as sess:
+    #with tf.Session(config=run_config) as sess:
+    with tf.Session() as sess:
         print('main running')
         gan = GAN(sess=sess, batch_size=FLAGS.batch_size,
                 checkpoint_dir=FLAGS.checkpoint_dir, 

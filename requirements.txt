@@ -1,5 +1,5 @@
 nibabel
-tensorflow-gpu==1.10.0
+tensorflow-gpu==2.5.3
 pytest
 networkx
 toposort
